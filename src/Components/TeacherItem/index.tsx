@@ -1,33 +1,53 @@
 import React from 'react';
-
+import api from '../../services/api';
 import whatsappIcon from '../../assets/images/icons/whatsapp.svg';
 
 import './styles.css';
 
 
-export default function TeacherItem() {
+export interface Teacher {
+   avatar: string;
+   bio: string;
+   cost: number;
+   id: number;
+   name: string;
+   subject: string;
+   whatsapp: string;
+}
+
+interface TeacherItemProps {
+   teacher: Teacher;
+}
+const TeacherItem: React.FC<TeacherItemProps> = ({ teacher }) =>  {
+   function sendMessage(number: string) {
+      window.open(`https://wa.me/${number}`);
+      createNewConnection();
+   }
+
+   function createNewConnection() {
+      api.post('/connections', {
+         user_id: teacher.id,
+      });
+   }
+
    return(
       <article className="teacher-item">
          <header>
-            <img src="https://avatars1.githubusercontent.com/u/61842405?s=460&u=9f634261e85236ed064c5eb472628c1ecb8a6acf&v=4" alt="Raphael"/>
+            <img src={teacher.avatar} alt={teacher.name}/>
             <div>
-               <strong>Raphael Capeto</strong>
-               <span>Lógica</span>
+               <strong>{teacher.name}</strong>
+               <span>{teacher.subject}</span>
             </div>
          </header>
 
-         <p>
-            Apaixonado por Lógica de programção e ensinar a todos como "comandar" a máquina,
-            <br/><br/>
-            100.000 pessoas começaram a comandar as máquinas
-         </p>
+         <p>{teacher.bio}</p>
          
          <footer>
             <p>
-               Preço/hora <strong>R$ 80, 00</strong>
+               Preço/hora <strong>R$ {teacher.cost}</strong>
             </p>
 
-            <button type="button">
+            <button type="button" onClick={() => sendMessage(teacher.whatsapp)}>
                <img src={whatsappIcon} alt="WhatsApp"/>
                Entrar em contato
             </button>
@@ -35,3 +55,5 @@ export default function TeacherItem() {
       </article>
    );
 }
+
+export default TeacherItem;
